@@ -1,0 +1,48 @@
+name: macOS App Auto-Build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build macOS App
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: |
+          brew install xcodegen
+
+      - name: Generate Xcode Project
+        run: |
+          xcodegen generate
+
+      - name: Build and Archive
+        run: |
+          xcodebuild -project Mongolmic.xcodeproj \
+                     -scheme Mongolmic \
+                     -configuration Release \
+                     -archivePath Mongolmic.xcarchive \
+                     archive \
+                     CODE_SIGNING_ALLOWED=NO
+
+      - name: Prepare Application Bundle
+        run: |
+          mkdir -p build_output
+          cp -R Mongolmic.xcarchive/Products/Applications/Mongolmic.app build_output/
+          cd build_output
+          zip -r Mongolmic_macOS.zip Mongolmic.app
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mongolmic-macOS-Executable
+          path: build_output/Mongolmic_macOS.zip
+          if-no-files-found: error
