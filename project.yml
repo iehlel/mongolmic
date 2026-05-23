@@ -1,0 +1,19 @@
+name: Mongolmic
+options:
+  bundleIdPrefix: com.beat
+targets:
+  Mongolmic:
+    type: application
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: macos
+        excludes:
+          - "Намайг унш.txt"
+    settings:
+      base:
+        INFOPLIST_FILE: macos/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.beat.mongolmic
+        DEVELOPMENT_TEAM: "" # Leave empty for local developer signing
+        CODE_SIGN_IDENTITY: "-" # Ad-hoc signing to allow anyone to run it locally
+        CODE_SIGN_STYLE: Manual
